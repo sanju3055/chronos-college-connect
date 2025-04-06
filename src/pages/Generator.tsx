@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Clock, ArrowRight } from 'lucide-react';
+import { toast } from 'sonner';
 
 // Import our new components
 import SetupForm from '@/components/generator/SetupForm';
@@ -13,6 +15,7 @@ import CompletionSection from '@/components/generator/CompletionSection';
 import AdvancedOptions from '@/components/generator/AdvancedOptions';
 
 const Generator = () => {
+  const navigate = useNavigate();
   const [selectedDepartment, setSelectedDepartment] = useState<string>("cs");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [progress, setProgress] = useState<number>(0);
@@ -25,6 +28,7 @@ const Generator = () => {
   const handleGenerate = () => {
     setIsGenerating(true);
     setStep("generating");
+    toast.info("Starting timetable generation...");
     
     // Simulate the generation process with a progress bar
     let currentProgress = 0;
@@ -36,6 +40,7 @@ const Generator = () => {
         clearInterval(interval);
         setIsGenerating(false);
         setStep("conflicts");
+        toast.warning("Conflicts detected in the generated timetable");
       }
     }, 500);
   };
@@ -44,6 +49,7 @@ const Generator = () => {
     // Simulate resolving conflicts
     setStep("finalizing");
     setProgress(0);
+    toast.info("Attempting to resolve conflicts automatically...");
     
     let currentProgress = 0;
     const interval = setInterval(() => {
@@ -53,6 +59,7 @@ const Generator = () => {
       if (currentProgress >= 100) {
         clearInterval(interval);
         setStep("completed");
+        toast.success("Timetable generated successfully!");
       }
     }, 400);
   };
@@ -61,23 +68,25 @@ const Generator = () => {
     setStep("setup");
     setProgress(0);
     setIsGenerating(false);
+    toast.info("Generation process cancelled");
   };
 
   const handleReviewManually = () => {
-    console.log("Reviewing conflicts manually");
+    toast.info("Opening manual conflict review...");
     // Implement review functionality here
+    // This would typically navigate to a detailed conflicts page
   };
 
   const handleGenerateAnother = () => {
     setStep("setup");
     setProgress(0);
     setIsGenerating(false);
+    toast.info("Ready to generate a new timetable");
   };
 
   const handleViewTimetable = () => {
-    console.log("Viewing generated timetable");
-    // Implement navigation to timetable view
-    window.location.href = "/timetables";
+    toast.success("Navigating to timetable view");
+    navigate("/timetables");
   };
 
   return (
@@ -113,7 +122,11 @@ const Generator = () => {
               )}
               
               {(step === "generating" || step === "finalizing") && (
-                <ProgressDisplay step={step} progress={progress} />
+                <ProgressDisplay 
+                  step={step} 
+                  progress={progress} 
+                  onCancel={handleCancel}
+                />
               )}
               
               {step === "conflicts" && (
@@ -130,7 +143,7 @@ const Generator = () => {
                   <Button variant="outline" onClick={handleCancel}>Cancel</Button>
                   <Button onClick={handleGenerate}>
                     Generate Timetable
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </>
               )}
@@ -140,7 +153,7 @@ const Generator = () => {
                   <Button variant="outline" onClick={handleReviewManually}>Review Manually</Button>
                   <Button onClick={resolveConflicts}>
                     Auto Resolve Conflicts
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </>
               )}
@@ -150,7 +163,7 @@ const Generator = () => {
                   <Button variant="outline" onClick={handleGenerateAnother}>Generate Another</Button>
                   <Button onClick={handleViewTimetable}>
                     View Timetable
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </>
               )}

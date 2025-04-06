@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -52,6 +53,29 @@ const Generator = () => {
         setStep("completed");
       }
     }, 400);
+  };
+
+  const handleCancel = () => {
+    setStep("setup");
+    setProgress(0);
+    setIsGenerating(false);
+  };
+
+  const handleReviewManually = () => {
+    console.log("Reviewing conflicts manually");
+    // Implement review functionality here
+  };
+
+  const handleGenerateAnother = () => {
+    setStep("setup");
+    setProgress(0);
+    setIsGenerating(false);
+  };
+
+  const handleViewTimetable = () => {
+    console.log("Viewing generated timetable");
+    // Implement navigation to timetable view
+    window.location.href = "/timetables";
   };
 
   return (
@@ -307,7 +331,7 @@ const Generator = () => {
             <CardFooter className="flex justify-between">
               {step === "setup" && (
                 <>
-                  <Button variant="outline">Cancel</Button>
+                  <Button variant="outline" onClick={handleCancel}>Cancel</Button>
                   <Button onClick={handleGenerate}>
                     Generate Timetable
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -317,7 +341,7 @@ const Generator = () => {
               
               {step === "conflicts" && (
                 <>
-                  <Button variant="outline">Review Manually</Button>
+                  <Button variant="outline" onClick={handleReviewManually}>Review Manually</Button>
                   <Button onClick={resolveConflicts}>
                     Auto Resolve Conflicts
                     <ArrowRight className="ml-2 h-4 w-4" />
@@ -327,8 +351,8 @@ const Generator = () => {
               
               {step === "completed" && (
                 <>
-                  <Button variant="outline">Generate Another</Button>
-                  <Button>
+                  <Button variant="outline" onClick={handleGenerateAnother}>Generate Another</Button>
+                  <Button onClick={handleViewTimetable}>
                     View Timetable
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
